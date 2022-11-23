@@ -58,7 +58,7 @@ if __name__ == "__main__":
     response = session.post("https://info.hansung.ac.kr/jsp_21/student/kyomu/siganpyo_aui_data.jsp", headers=header, data=data).text.replace("\r", "").replace("\t", "")
     response = response.split("\n")
 
-    res = []
+    res = {"data": []}
     dic = {}
     for item in response:
         title = re.search(r'<.*?>', item)
@@ -73,6 +73,11 @@ if __name__ == "__main__":
                 dic[title] = s
 
             if title == "kwamokgubun":
-                res.append(dic)
+                res["data"].append(dic)
                 dic = {}
-    pprint(res)
+
+    # print(json.dumps(res, indent=4, ensure_ascii=False))
+
+    file_path = "./data.json"
+    with open(file_path, 'w') as outfile:
+        json.dump(res, outfile, indent=4, ensure_ascii=False)
