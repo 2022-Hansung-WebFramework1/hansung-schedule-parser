@@ -1,8 +1,304 @@
 import json
 import os
 import re
+from datetime import datetime
+
 import requests
 from pprint import pprint
+
+
+time_dict = {
+    "MON": {
+        "1~2": {
+            "start": datetime(2022, 1, 1, 9, 0, 0),
+            "end": datetime(2022, 1, 1, 10, 15, 0)
+        },
+        "2~3M": {
+            "start": datetime(2022, 1, 1, 9, 30, 0),
+            "end": datetime(2022, 1, 1, 11, 45, 0)
+        },
+        "2M~3M": {
+            "start": datetime(2022, 1, 1, 10, 30, 0),
+            "end": datetime(2022, 1, 1, 11, 45, 0)
+        },
+        "4~5": {
+            "start": datetime(2022, 1, 1, 12, 00, 0),
+            "end": datetime(2022, 1, 1, 13, 15, 0)
+        },
+        "4~5M": {
+            "start": datetime(2022, 1, 1, 12, 30, 0),
+            "end": datetime(2022, 1, 1, 14, 00, 0)
+        },
+        "5M~6M": {
+            "start": datetime(2022, 1, 1, 13, 30, 0),
+            "end": datetime(2022, 1, 1, 14, 45, 0)
+        },
+        "7~8": {
+            "start": datetime(2022, 1, 1, 15, 00, 0),
+            "end": datetime(2022, 1, 1, 16, 15, 0)
+        },
+        "8~9M": {
+            "start": datetime(2022, 1, 1, 16, 0, 0),
+            "end": datetime(2022, 1, 1, 17, 15, 0)
+        },
+        "8M~9M": {
+            "start": datetime(2022, 1, 1, 16, 30, 0),
+            "end": datetime(2022, 1, 1, 17, 50, 0)
+        },
+        "9~10": {
+            "start": datetime(2022, 1, 1, 17, 00, 0),
+            "end": datetime(2022, 1, 1, 18, 15, 0)
+        },
+        "10~11": {
+            "start": datetime(2022, 1, 1, 18, 00, 0),
+            "end": datetime(2022, 1, 1, 19, 15, 0)
+        },
+        "10~11M": {
+            "start": datetime(2022, 1, 1, 18, 00, 0),
+            "end": datetime(2022, 1, 1, 19, 40, 0)
+        },
+        "10M~11M": {
+            "start": datetime(2022, 1, 1, 18, 25, 0),
+            "end": datetime(2022, 1, 1, 19, 40, 0)
+        },
+        "11M~12M": {
+            "start": datetime(2022, 1, 1, 19, 0, 0),
+            "end": datetime(2022, 1, 1, 20, 15, 0)
+        },
+        "11M~13": {
+            "start": datetime(2022, 1, 1, 19, 0, 0),
+            "end": datetime(2022, 1, 1, 21, 5, 0)
+        },
+        "12~13": {
+            "start": datetime(2022, 1, 1, 19, 50, 0),
+            "end": datetime(2022, 1, 1, 21, 5, 0)
+        },
+        "13M~14M": {
+            "start": datetime(2022, 1, 1, 21, 15, 0),
+            "end": datetime(2022, 1, 1, 22, 30, 0)
+        },
+    },
+    "TUE": {
+        "1~1M": {
+            "start": datetime(2022, 1, 1, 9, 0, 0),
+            "end": datetime(2022, 1, 1, 9, 50, 0)
+        },
+        "2~2M": {
+            "start": datetime(2022, 1, 1, 10, 0, 0),
+            "end": datetime(2022, 1, 1, 10, 50, 0)
+        },
+        "2~3M": {
+            "start": datetime(2022, 1, 1, 10, 0, 0),
+            "end": datetime(2022, 1, 1, 11, 50, 0)
+        },
+        "3~3M": {
+            "start": datetime(2022, 1, 1, 11, 0, 0),
+            "end": datetime(2022, 1, 1, 11, 50, 0)
+        },
+        "4~4M": {
+            "start": datetime(2022, 1, 1, 12, 0, 0),
+            "end": datetime(2022, 1, 1, 12, 50, 0)
+        },
+        "5~5M": {
+            "start": datetime(2022, 1, 1, 13, 0, 0),
+            "end": datetime(2022, 1, 1, 13, 50, 0)
+        },
+        "5~7M": {
+            "start": datetime(2022, 1, 1, 13, 0, 0),
+            "end": datetime(2022, 1, 1, 15, 50, 0)
+        },
+        "6~6M": {
+            "start": datetime(2022, 1, 1, 14, 0, 0),
+            "end": datetime(2022, 1, 1, 14, 50, 0)
+        },
+        "7~7M": {
+            "start": datetime(2022, 1, 1, 15, 0, 0),
+            "end": datetime(2022, 1, 1, 15, 50, 0)
+        },
+        "8~8M": {
+            "start": datetime(2022, 1, 1, 16, 0, 0),
+            "end": datetime(2022, 1, 1, 16, 50, 0)
+        },
+        "9~9M": {
+            "start": datetime(2022, 1, 1, 17, 0, 0),
+            "end": datetime(2022, 1, 1, 17, 50, 0)
+        },
+        "10~10M": {
+            "start": datetime(2022, 1, 1, 18, 0, 0),
+            "end": datetime(2022, 1, 1, 18, 50, 0)
+        },
+        "11~11M": {
+            "start": datetime(2022, 1, 1, 18, 55, 0),
+            "end": datetime(2022, 1, 1, 19, 45, 0)
+        },
+        "12~12M": {
+            "start": datetime(2022, 1, 1, 19, 50, 0),
+            "end": datetime(2022, 1, 1, 20, 40, 0)
+        },
+        "13~13M": {
+            "start": datetime(2022, 1, 1, 20, 45, 0),
+            "end": datetime(2022, 1, 1, 21, 35, 0)
+        },
+        "14~14M": {
+            "start": datetime(2022, 1, 1, 21, 40, 0),
+            "end": datetime(2022, 1, 1, 22, 30, 0)
+        },
+    },
+    "WED": {
+        "1~2": {
+            "start": datetime(2022, 1, 1, 9, 0, 0),
+            "end": datetime(2022, 1, 1, 10, 15, 0)
+        },
+        "2M~3M": {
+            "start": datetime(2022, 1, 1, 10, 30, 0),
+            "end": datetime(2022, 1, 1, 11, 45, 0)
+        },
+        "4~5": {
+            "start": datetime(2022, 1, 1, 12, 00, 0),
+            "end": datetime(2022, 1, 1, 13, 15, 0)
+        },
+        "5M~6M": {
+            "start": datetime(2022, 1, 1, 13, 30, 0),
+            "end": datetime(2022, 1, 1, 14, 45, 0)
+        },
+        "6~8M": {
+            "start": datetime(2022, 1, 1, 14, 00, 0),
+            "end": datetime(2022, 1, 1, 16, 50, 0)
+        },
+        "7~8": {
+            "start": datetime(2022, 1, 1, 15, 00, 0),
+            "end": datetime(2022, 1, 1, 16, 15, 0)
+        },
+        "8M~9M": {
+            "start": datetime(2022, 1, 1, 16, 30, 0),
+            "end": datetime(2022, 1, 1, 17, 45, 0)
+        },
+        "10~11": {
+            "start": datetime(2022, 1, 1, 18, 00, 0),
+            "end": datetime(2022, 1, 1, 19, 15, 0)
+        },
+        "11M~12M": {
+            "start": datetime(2022, 1, 1, 19, 25, 0),
+            "end": datetime(2022, 1, 1, 20, 40, 0)
+        },
+        "13~14": {
+            "start": datetime(2022, 1, 1, 20, 45, 0),
+            "end": datetime(2022, 1, 1, 22, 0, 0)
+        },
+    },
+    "THU": {
+        "1~2": {
+            "start": datetime(2022, 1, 1, 9, 0, 0),
+            "end": datetime(2022, 1, 1, 10, 15, 0)
+        },
+        "2M~3M": {
+            "start": datetime(2022, 1, 1, 10, 30, 0),
+            "end": datetime(2022, 1, 1, 11, 45, 0)
+        },
+        "4~5": {
+            "start": datetime(2022, 1, 1, 12, 00, 0),
+            "end": datetime(2022, 1, 1, 13, 15, 0)
+        },
+        "5M~6M": {
+            "start": datetime(2022, 1, 1, 13, 30, 0),
+            "end": datetime(2022, 1, 1, 14, 45, 0)
+        },
+        "7~8": {
+            "start": datetime(2022, 1, 1, 15, 00, 0),
+            "end": datetime(2022, 1, 1, 16, 15, 0)
+        },
+        "8M~9M": {
+            "start": datetime(2022, 1, 1, 16, 30, 0),
+            "end": datetime(2022, 1, 1, 17, 45, 0)
+        },
+        "10~11": {
+            "start": datetime(2022, 1, 1, 18, 00, 0),
+            "end": datetime(2022, 1, 1, 19, 15, 0)
+        },
+        "11M~12M": {
+            "start": datetime(2022, 1, 1, 19, 25, 0),
+            "end": datetime(2022, 1, 1, 20, 40, 0)
+        },
+        "13~14": {
+            "start": datetime(2022, 1, 1, 20, 45, 0),
+            "end": datetime(2022, 1, 1, 22, 0, 0)
+        },
+    },
+    "FRI": {
+        "1~1M": {
+            "start": datetime(2022, 1, 1, 9, 0, 0),
+            "end": datetime(2022, 1, 1, 9, 50, 0)
+        },
+        "2~2M": {
+            "start": datetime(2022, 1, 1, 10, 0, 0),
+            "end": datetime(2022, 1, 1, 10, 50, 0)
+        },
+        "3~3M": {
+            "start": datetime(2022, 1, 1, 11, 0, 0),
+            "end": datetime(2022, 1, 1, 11, 50, 0)
+        },
+        "4~4M": {
+            "start": datetime(2022, 1, 1, 12, 0, 0),
+            "end": datetime(2022, 1, 1, 12, 50, 0)
+        },
+        "5~5M": {
+            "start": datetime(2022, 1, 1, 13, 0, 0),
+            "end": datetime(2022, 1, 1, 13, 50, 0)
+        },
+        "5~6M": {
+            "start": datetime(2022, 1, 1, 13, 0, 0),
+            "end": datetime(2022, 1, 1, 14, 50, 0)
+        },
+        "6~6M": {
+            "start": datetime(2022, 1, 1, 14, 0, 0),
+            "end": datetime(2022, 1, 1, 14, 50, 0)
+        },
+        "7~7M": {
+            "start": datetime(2022, 1, 1, 15, 0, 0),
+            "end": datetime(2022, 1, 1, 15, 50, 0)
+        },
+        "7~8M": {
+            "start": datetime(2022, 1, 1, 15, 0, 0),
+            "end": datetime(2022, 1, 1, 16, 50, 0)
+        },
+        "8~8M": {
+            "start": datetime(2022, 1, 1, 16, 0, 0),
+            "end": datetime(2022, 1, 1, 16, 50, 0)
+        },
+        "9~9M": {
+            "start": datetime(2022, 1, 1, 17, 0, 0),
+            "end": datetime(2022, 1, 1, 17, 50, 0)
+        },
+        "10~10M": {
+            "start": datetime(2022, 1, 1, 18, 0, 0),
+            "end": datetime(2022, 1, 1, 18, 50, 0)
+        },
+        "11~11M": {
+            "start": datetime(2022, 1, 1, 18, 55, 0),
+            "end": datetime(2022, 1, 1, 19, 45, 0)
+        },
+        "12~12M": {
+            "start": datetime(2022, 1, 1, 19, 50, 0),
+            "end": datetime(2022, 1, 1, 20, 40, 0)
+        },
+        "13~13M": {
+            "start": datetime(2022, 1, 1, 20, 45, 0),
+            "end": datetime(2022, 1, 1, 21, 35, 0)
+        },
+        "14~14M": {
+            "start": datetime(2022, 1, 1, 21, 40, 0),
+            "end": datetime(2022, 1, 1, 22, 30, 0)
+        },
+    }
+}
+
+KOR_DAY_TO_ENG = {
+    "월": "MON",
+    "화": "TUE",
+    "수": "WED",
+    "목": "THU",
+    "금": "FRI"
+}
 
 # 헤더 꼭 필요함
 header = {
@@ -69,6 +365,30 @@ if __name__ == "__main__":
 
             if title == "prof":
                 dic[title] = list(map(lambda x: x.strip(), s.split(",")))
+            elif title == "classroom":
+                temp = s.split("/")
+                temp = [x.lstrip().rstrip().replace("  ", " ") for x in temp]
+
+                # 온라인강좌 있을경우
+                if len(temp) >= 2:
+                    dic["online"] = temp[0]
+
+                    classroom, time = temp[1].split(" ")
+                    dic["classroom"] = classroom
+                    dic["day"] = time[0]
+
+                    if len(time[1:]) <= 10:
+                        dic["startTime"] = time_dict[KOR_DAY_TO_ENG[time[0]]][time[1:]]["start"].strftime("%H:%M")
+                        dic["endTime"] = time_dict[KOR_DAY_TO_ENG[time[0]]][time[1:]]["end"].strftime("%H:%M")
+
+                else:
+                    classroom, time = temp[0].split(" ")
+                    dic["classroom"] = classroom
+                    dic["day"] = time[0]
+
+                    if len(time[1:]) <= 10:
+                        dic["startTime"] = time_dict[KOR_DAY_TO_ENG[time[0]]][time[1:]]["start"].strftime("%H:%M")
+                        dic["endTime"] = time_dict[KOR_DAY_TO_ENG[time[0]]][time[1:]]["end"].strftime("%H:%M")
             else:
                 dic[title] = s
 
