@@ -356,6 +356,7 @@ if __name__ == "__main__":
 
     res = {"data": []}
     dic = {}
+    index = 1
     for item in response:
         title = re.search(r'<.*?>', item)
         s = re.search(r'<!\[CDATA\[.*?\]\]>', item)
@@ -389,6 +390,9 @@ if __name__ == "__main__":
                     if len(time[1:]) <= 10:
                         dic["startTime"] = time_dict[KOR_DAY_TO_ENG[time[0]]][time[1:]]["start"].strftime("%H:%M")
                         dic["endTime"] = time_dict[KOR_DAY_TO_ENG[time[0]]][time[1:]]["end"].strftime("%H:%M")
+
+                dic["id"] = str(index)
+                index += 1
             else:
                 dic[title] = s
 
